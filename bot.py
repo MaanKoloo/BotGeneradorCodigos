@@ -11,7 +11,7 @@ CODES_FILE = "plata.txt", "diamante.txt", "oro.txt"
 ROLE_ID = 867366769392091157
 
 # Tiempo de espera para volver a usar el bot
-COOLDOWN = 120
+COOLDOWN = 60
 
 # imports
 import asyncio
