@@ -1,30 +1,19 @@
-# Config
-# If you know what your doing, feel free to edit the code.
-
-# Bot Token
-# Token of the Bot which you want to use.
+# TOKEN DEL BOT
 TOKEN = ""
 
-# Log File
-# Where all the logs of everything are stored.
-# Default: "logs.txt"
+# Archivo donde registrara logs (Quien ha usado, o intentado usar el bot, etc.)
 LOG_FILE = "logs.txt"
 
-# File where the codes are stored.
-# Codes are given out by lines, so make sure they are split line by line.
-# Default: "codes.txt"
+# Archivos que contienen los codigos
 CODES_FILE = "plata.txt", "diamante.txt", "oro.txt"
 
 # Role ID
-# This is the ID of the role which is allowed to use the gen.
 ROLE_ID = 867366769392091157
 
-# Cooldown
-# This is the seconds cooldown each user has per usage.
-# 86400 is a day / 3600 is an hour
+# Tiempo de espera para volver a usar el bot
 COOLDOWN = 120
 
-# imports here
+# imports
 import asyncio
 import discord
 from discord.ext import commands
@@ -36,6 +25,7 @@ from colorama import Fore, init
 
 init(autoreset=True)
 gen_role = None
+# command_prefix= simbolo para usar el bot
 bot = commands.Bot(command_prefix="-", intents=discord.Intents.all(), case_insensitive=True) # prefix here
 
 async def getEmbed(type, arg=None): # change colours if you want to here 
@@ -70,23 +60,23 @@ async def log(event, user=None, info=None): # logging in log.txt if you want to 
     writeable = ""
     
     if event == "generated":
-        writeable += "[ GENERATE ] "
+        writeable += "[ GENERADO ] "
     elif event == "cooldown":
-        writeable += "[ COOLDOWN ] "
+        writeable += "[ TIEMPO DE ESPERA ] "
     elif event == "no stock":
-        writeable += "[ NO STOCK ] "
+        writeable += "[ SIN STOCK ] "
     elif event == "no dms":
         writeable += "[  NO DMS  ] "
     elif event == "bootup":
-        writeable += "\n[  BOOTUP  ] "
+        writeable += "\n[  BOT INICIADO  ] "
     elif event == "ping":
         writeable += "[   PING   ] "
     elif event == "no perms":
-        writeable += "[ NO PERMS ] "
+        writeable += "[ SIN PERMISOS ] "
     elif event == "userinfo":
-        writeable += "[ USERINFO ] "
+        writeable += "[ INFORMACION DEL USUARIO ] "
     elif event == "error":
-        writeable += "[ CRITICAL ] "
+        writeable += "[ ERROR CRITICO ] "
 
     writeable += timedata
     
@@ -118,12 +108,12 @@ async def log(event, user=None, info=None): # logging in log.txt if you want to 
     async with aiofiles.open(LOG_FILE, mode="a") as file:
         await file.write(f"\n{writeable}")
     
-    if writeable.startswith("[ NO STOCK ]"):
+    if writeable.startswith("[ SIN STOCK ]"):
         print(Fore.LIGHTYELLOW_EX + writeable.strip('\n'))
-    elif writeable.startswith("[ CRITICAL ]"):
+    elif writeable.startswith("[ ERROR CRITICO ]"):
         for x in range(3):
             print(Fore.LIGHTRED_EX + writeable.strip('\n'))
-    elif writeable.startswith("[  BOOTUP  ]"):
+    elif writeable.startswith("[  BOT INICIADO  ]"):
         print(Fore.LIGHTGREEN_EX + writeable.strip('\n'))
 
 @bot.event
@@ -144,7 +134,7 @@ async def on_ready():
             gen_role = role
             break
     if gen_role == None:
-        await log("error", user=None, info=f"Cannot fetch role ({ROLE_ID}) from {bot.guilds[0].name}. Exiting in 5 seconds.")
+        await log("error", user=None, info=f"No se puede encontrar el rol ({ROLE_ID}) desde {bot.guilds[0].name}. Saliendo en 5 segundos.")
         await asyncio.sleep(5)
         exit()
 
@@ -167,7 +157,6 @@ async def generate(ctx):
         dm_msg = await ctx.author.send("Procesando información...")
     except:
         embed = discord.Embed(title="DMs estan desactivados!", description="Debes activarlos para recibir el codigo.", colour=discord.Colour.red())
-        embed.set_image(url="https://cdn.discordapp.com/attachments/829087959331897364/850841491470548992/ezgif-2-ca6ebd5d9cfb.gif")
         await ctx.send(content=ctx.author.mention, embed=embed)
         await log("no dms", ctx.author)
         return
@@ -193,7 +182,7 @@ async def generate(ctx):
     await ctx.send(embed=await getEmbed(type=0), content=ctx.author.mention)
     await log("generated", ctx.author, code)
     
- @bot.command()
+@bot.command()
 @commands.cooldown(1, COOLDOWN) # 1 is codes per cooldown // 86400 is the cooldown time (is in second)
 @commands.has_role(ROLE_ID) # role for gen perms
 @commands.guild_only()
@@ -202,7 +191,6 @@ async def generate(ctx):
         dm_msg = await ctx.author.send("Procesando información...")
     except:
         embed = discord.Embed(title="DMs estan desactivados!", description="Debes activarlos para recibir el codigo.", colour=discord.Colour.red())
-        embed.set_image(url="https://cdn.discordapp.com/attachments/829087959331897364/850841491470548992/ezgif-2-ca6ebd5d9cfb.gif")
         await ctx.send(content=ctx.author.mention, embed=embed)
         await log("no dms", ctx.author)
         return
@@ -237,7 +225,6 @@ async def generate(ctx):
         dm_msg = await ctx.author.send("Procesando información...")
     except:
         embed = discord.Embed(title="DMs estan desactivados!", description="Debes activarlos para recibir el codigo.", colour=discord.Colour.red())
-        embed.set_image(url="https://cdn.discordapp.com/attachments/829087959331897364/850841491470548992/ezgif-2-ca6ebd5d9cfb.gif")
         await ctx.send(content=ctx.author.mention, embed=embed)
         await log("no dms", ctx.author)
         return
@@ -269,9 +256,9 @@ async def userinfo(ctx, *, user : discord.Member = None):
         user = ctx.author
     
     if gen_role in user.roles:
-        des = f"Generator: `🟢`"
+        des = f"Generador: `🟢`"
     else:
-        des = f"Generator: `🔴`"
+        des = f"Generador: `🔴`"
     
     embed = discord.Embed(color=discord.Colour.blue(), description=des, title=" ")
     embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.default_avatar_url)
