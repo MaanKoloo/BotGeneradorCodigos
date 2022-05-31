@@ -1,2 +1,2 @@
-example1@gmail.com:example1
-example2@gmail.com:example2
+oro1 
+oro2
